@@ -1,14 +1,11 @@
 
-export const bankSlipService = async (event) => {
-  return {
-    statusCode: 200,
-    body: JSON.stringify(
-      {
-        message: 'Go Serverless v1.0! Your function executed successfully!',
-        input: event,
-      },
-      null,
-      2
-    ),
-  };
+export const bankSlipService = async (event: any) => {
+  if (event.http.method != 'GET') {
+    return {
+      statusCode: 405,
+      body: JSON.stringify({
+        message: 'Method not allowed',
+      }),
+    }
+  }
 };
