@@ -1,4 +1,4 @@
-import { barCodeIsNumberValidate, currencyCode } from './utils/validate';
+import { barCodeIsNumberValidate, currencyCode } from './lib/validate';
 import { bankCodeApi } from './lib/bankApi';
 
 type barCode = number;
