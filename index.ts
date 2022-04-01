@@ -1,4 +1,6 @@
-import { barCodeIsNumberValidate, currencyCode } from './utils/validate'
+import { barCodeIsNumberValidate, currencyCode } from './utils/validate';
+import { bankCodeApi } from './lib/bankApi';
+
 type barCode = number;
 export const bankSlipService = async (event: any) => {
   if (event.httpMethod != 'GET') {
@@ -19,11 +21,22 @@ export const bankSlipService = async (event: any) => {
     }
   }
 
-  if (!currencyCode(barCode)) {
+  if(!currencyCode(barCode)) {
     return {
       statusCode: 400,
       body: JSON.stringify({
         message: 'Currency code is not BRL',
+      }),
+    }
+  }
+
+  const isValidBankCode = await bankCodeApi(barCode);
+
+  if (!isValidBankCode) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({
+        message: 'Bank code is not valid',
       }),
     }
   }
