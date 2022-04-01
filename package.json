@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "handler.js",
-  "scripts": {},
+  "scripts": {
+    "server": "serverless offline start --httpPort 8080 --noPrependStageInUrl"
+  },
   "author": "Vinicius Freitas",
   "license": "ISC",
   "devDependencies": {
