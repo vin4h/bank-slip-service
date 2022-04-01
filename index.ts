@@ -1,4 +1,4 @@
-import { barCodeIsNumberValidate } from './utils/validate'
+import { barCodeIsNumberValidate, currencyCode } from './utils/validate'
 type barCode = number;
 export const bankSlipService = async (event: any) => {
   if (event.httpMethod != 'GET') {
@@ -15,6 +15,15 @@ export const bankSlipService = async (event: any) => {
       statusCode: 400,
       body: JSON.stringify({
         message: 'BarCode must be a number or contains 44 numbers',
+      }),
+    }
+  }
+
+  if (!currencyCode(barCode)) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({
+        message: 'Currency code is not BRL',
       }),
     }
   }
