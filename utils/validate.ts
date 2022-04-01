@@ -1,5 +1,4 @@
 export const barCodeIsNumberValidate = (barCode: number): boolean => {
-  console.log(isNaN(barCode))
   if(barCode.toString().length < 44) {
     return false;
   } else if(isNaN(barCode)) {
