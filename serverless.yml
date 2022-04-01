@@ -1,6 +1,10 @@
 service: bankslipservice
 frameworkVersion: '3'
 
+plugins:
+  - serverless-plugin-typescript
+  - serverless-offline
+
 provider:
   name: aws
   runtime: nodejs14.x
@@ -8,8 +12,11 @@ provider:
 
 functions:
   bankSlipService:
-    handler: handler.bankSlipService
-  events:
-   - http:
-       path: /boleto/
-       method: GET
+    handler: index.bankSlipService
+    events:
+    - http:
+        path: /boleto/{barCode}
+        method: GET
+        parameters:
+             paths:
+               barCode: true
