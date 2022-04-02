@@ -1,5 +1,4 @@
 import { bankSlipService } from "../index";
-import axios from "axios";
 
 const digitableLineCorrect = "21290001192110001210904475617405975870000002000";
 const digitableLineDigitValidateError = "21290001132110001210904475617405975870000002000";
