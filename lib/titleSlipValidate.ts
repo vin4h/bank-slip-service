@@ -270,6 +270,14 @@ const getExpirationDate = (value: string): string => {
  * @returns {IResponseStructure} - Return object with status code and object with error message our {barCode, amount, expirationDate}
  */
 export const titleSlipValidate = async (digitableLine: number): Promise<IResponseStructure> => {
+  if (digitableLine.toString().length !== 47) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({
+        message: "The digitable line must have 47 characters"
+      })
+    }
+  }
 
   if (isNaN(digitableLine)) {
     return {
