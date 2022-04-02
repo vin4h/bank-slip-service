@@ -186,3 +186,37 @@ export const amountInBarCode = (value: string): string => {
   const amount = parseFloat(lastDigits).toFixed(0).toString().concat("." + decimal);
   return amount;
 }
+
+export const getExpirationDate = (value: string): string => {
+  let fixedDate = new Date("07-03-2000");
+
+  let factor = parseInt(value.slice(1, 5));
+
+  let expirationDate = 0;
+  let convertedDate = "";
+
+  if (factor > 9999) {
+    fixedDate = new Date("02-22-2025");
+    factor = factor % 9999 + 1000;
+  }
+
+  if (factor < 1000) {
+    fixedDate = new Date("10-07-1997");
+    expirationDate = fixedDate.setDate(fixedDate.getDate() + factor);
+
+    convertedDate = new Date(expirationDate).toLocaleDateString().split("/").reverse().join("-");
+
+    return convertedDate;
+  }
+
+  if (factor === 1000) {
+    return fixedDate.toLocaleDateString().split("/").reverse().join("-");
+  }
+
+
+  expirationDate = fixedDate.setDate(fixedDate.getDate() + (factor - 1000));
+
+  convertedDate = new Date(expirationDate).toLocaleDateString().split("/").reverse().join("-");
+
+  return convertedDate;
+}

@@ -1,4 +1,4 @@
-import { barCodeIsNumberValidate, currencyCode, validateDigitDigitableLine, convertDigitableLineInBarCode, amountInBarCode } from './lib/titleSlipValidate';
+import { barCodeIsNumberValidate, currencyCode, validateDigitDigitableLine, convertDigitableLineInBarCode, amountInBarCode, getExpirationDate } from './lib/titleSlipValidate';
 import { bankCodeApi } from './lib/bankApi';
 import { IConvertInBarCode } from './lib/interfaces';
 
@@ -56,12 +56,14 @@ export const bankSlipService = async (event: any) => {
 
   const amount = amountInBarCode(partialsBarCode.sixthSection);
 
+  const expirationDate = getExpirationDate(partialsBarCode.sixthSection);
+
   return {
     statusCode: 200,
     body: JSON.stringify({
       barCode,
       amount,
-      "expirationDate": "2021-01-01",
+      expirationDate,
     }),
   }
 };
