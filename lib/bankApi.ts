@@ -30,7 +30,6 @@ export const bankCodeApi = async (barCode: number) => {
 
     return true;
   } catch (error: any) {
-    console.error(error.message);
     return false;
   }
 
