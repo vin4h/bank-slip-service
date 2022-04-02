@@ -1,7 +1,7 @@
 import { bankCodeApi } from "./bankApi";
 import { IConvertInBarCode, IFieldsToCalculate, IResponseStructure, ISumFields } from "./interfaces";
 
-const barCodeIsNumberValidate = (digitableLine: number): boolean => {
+const digitableLinesNumberValidate = (digitableLine: number): boolean => {
   if (isNaN(digitableLine)) {
     return false;
   } else {
@@ -223,7 +223,8 @@ const getExpirationDate = (value: string): string => {
 export const titleSlipValidate = async (digitableLine: number): Promise<IResponseStructure> => {
   let statusCode;
   let body = {};
-  if (!barCodeIsNumberValidate(digitableLine)) {
+
+  if (!digitableLinesNumberValidate(digitableLine)) {
     {
       statusCode = 400;
       body = JSON.stringify({
