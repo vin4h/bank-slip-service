@@ -1,9 +1,7 @@
 import { IConvertInBarCode, IFieldsToCalculate, ISumFields } from "./interfaces";
 
 export const barCodeIsNumberValidate = (digitableLine: number): boolean => {
-  if (digitableLine.toString().length >= 47 || digitableLine.toString().length <= 48) {
-    return false;
-  } else if (isNaN(digitableLine)) {
+  if (isNaN(digitableLine)) {
     return false;
   } else {
     return true;
