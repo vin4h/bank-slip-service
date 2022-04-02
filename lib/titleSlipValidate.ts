@@ -1,6 +1,12 @@
 import { bankCodeApi } from "./bankApi";
 import { IConvertInBarCode, IFieldsToCalculate, IResponseStructure, ISumFields } from "./interfaces";
 
+/**
+ * @description Validate the currency title slip
+ * @param {number} currency - The currency code
+ * @return {boolean} - Return true if the currency code is valid
+ */
+
 const currencyCode = (currency: number): boolean => {
   if (currency.toString()[3] === '9') {
     return true;
@@ -9,6 +15,11 @@ const currencyCode = (currency: number): boolean => {
   }
 }
 
+/**
+ * @description Get fields to calculate the validate digit of the title slip
+ * @param digitableLine - The digitable line recived from request
+ * @returns {IFieldsToCalculate} - Return three strings with the fields to calculate
+ */
 const getFieldsToCalculate = (digitableLine: number): IFieldsToCalculate => {
 
   const firstFieldCalculate =
@@ -42,7 +53,12 @@ const getFieldsToCalculate = (digitableLine: number): IFieldsToCalculate => {
   };
 }
 
-const exceededMultiplierValue = (value: number) => {
+/**
+ * @description Case the sum of the fields is greater than 9, the value exceeded separates into indices and sums them up
+ * @param value - The value to be calculated
+ * @returns {number} - Return the sum of the values exceeded
+ */
+const exceededMultiplierValue = (value: number): number => {
   let sum = 0;
   value.toString().split('').map(item => {
     sum += parseInt(item);
@@ -50,6 +66,11 @@ const exceededMultiplierValue = (value: number) => {
   return sum;
 }
 
+/**
+ * @description Sum the fields to calculate the validate digit of the title slip
+ * @param {IFieldsToCalculate} fieldsToCalculate - The fields to calculate
+ * @returns {ISumFields} - Return the sum of the fields to calculate validate digits
+*/
 const sumFields = ({ firstFieldCalculate, secondFieldCalculate, thirdFieldCalculate }: IFieldsToCalculate): ISumFields => {
   let mult = 2;
 
@@ -109,6 +130,11 @@ const sumFields = ({ firstFieldCalculate, secondFieldCalculate, thirdFieldCalcul
   };
 }
 
+/**
+ * @description Calculate the validate digit of the title slip
+ * @param {number} value - The value to be calculated in sumFields()
+ * @returns {number} - Return the validate digit
+*/
 const calculateDigit = (value: number): number => {
   let nextTen = Math.ceil(value / 10) * 10;
   let lastTen = (Math.ceil(value / 10) * 10) - 10;
@@ -118,7 +144,15 @@ const calculateDigit = (value: number): number => {
   return divisionRemainder;
 }
 
-const digitIsVallid = (firstDigit: number, secondDigit: number, thirdDigit: number, digitableLine: number): boolean => {
+/**
+ * @description Validate the digit of the title slip is equals to the digit calculated after sun fields
+ * @param {number} firstDigit - The first digit calculated
+ * @param {number} secondDigit - The second digit calculated
+ * @param {number} thirdDigit - The third digit calculated
+ * @param {number} digitableLine - The digitable line recived from request
+ * @returns {boolean} - Returns true if the digit is equal to the digit entered in the request
+ */
+const digitIsValid = (firstDigit: number, secondDigit: number, thirdDigit: number, digitableLine: number): boolean => {
   const firstNumberDigitValid = parseInt(digitableLine.toString()[9]);
   const secondNumberDigitValid = parseInt(digitableLine.toString()[20]);
   const thirdNumberDigitValid = parseInt(digitableLine.toString()[31]);
@@ -129,7 +163,12 @@ const digitIsVallid = (firstDigit: number, secondDigit: number, thirdDigit: numb
   }
 }
 
-const validateDigitDigitableLine = (digitableLine: number): boolean => {
+/**
+ * @description Validate the title slip
+ * @param {number} digitableLine - The digitable line recived from request
+ * @returns {boolean} - returns true fetch fields to calculate, add the get fields, calculate each section and validate the digits as informed in the request. If not return false
+ */
+const validateDigitInDigitableLine = (digitableLine: number): boolean => {
   const { firstFieldCalculate, secondFieldCalculate, thirdFieldCalculate } = getFieldsToCalculate(digitableLine);
 
   const { sumFirstField, sumSecondField, sumThirdField }: ISumFields = sumFields({ firstFieldCalculate, secondFieldCalculate, thirdFieldCalculate });
@@ -140,12 +179,16 @@ const validateDigitDigitableLine = (digitableLine: number): boolean => {
 
   const digitValidThirdField = calculateDigit(sumThirdField);
 
-  const isValid = digitIsVallid(digitValidFirstField, digitValidSecondField, digitValidThirdField, digitableLine);
+  const isValid = digitIsValid(digitValidFirstField, digitValidSecondField, digitValidThirdField, digitableLine);
 
   return isValid;
-
 }
 
+/**
+ * @description Convert digitable line em sections
+ * @param {number} digitableLine - The digitable line recived from request
+ * @returns {IConvertInBarCode} - Return bar code and object contains each section in the digitable line
+*/
 const convertDigitableLineInBarCode = (digitableLine: number): IConvertInBarCode => {
   const firstSection = digitableLine.toString().substring(0, 4);
   const secondSection = digitableLine.toString().substring(4, 9);
@@ -170,6 +213,11 @@ const convertDigitableLineInBarCode = (digitableLine: number): IConvertInBarCode
   }
 }
 
+/**
+ * @description Sum informed in the last ten champions of the digitable line
+ * @param {string} value - The value to be calculated
+ * @returns {string} - Return the sum
+ */
 const amountInBarCode = (value: string): string => {
   const lastDigits = value.split('').join('').slice(5, 13);
   const decimal = value.slice(13,15);
@@ -177,6 +225,11 @@ const amountInBarCode = (value: string): string => {
   return amount;
 }
 
+/**
+ * @description Find the expiration date in sixth section of the digitable line
+ * @param {string} value - The value to be convert in default date format
+ * @returns {string} - Return the expiration date
+ */
 const getExpirationDate = (value: string): string => {
   let fixedDate = new Date("07-03-2000");
 
@@ -211,10 +264,12 @@ const getExpirationDate = (value: string): string => {
   return convertedDate;
 }
 
-
+/**
+ * @description The main function to validate the title slip and your returns cases
+ * @param {number} digitableLine - The digitable line recived from request
+ * @returns {IResponseStructure} - Return object with status code and object with error message our {barCode, amount, expirationDate}
+ */
 export const titleSlipValidate = async (digitableLine: number): Promise<IResponseStructure> => {
-  let statusCode;
-  let body = {};
 
   if (isNaN(digitableLine)) {
     return {
@@ -245,7 +300,7 @@ export const titleSlipValidate = async (digitableLine: number): Promise<IRespons
     }
   }
 
-  const dv = validateDigitDigitableLine(digitableLine);
+  const dv = validateDigitInDigitableLine(digitableLine);
 
   if (!dv) {
      return {
