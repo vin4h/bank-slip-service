@@ -1,13 +1,7 @@
 import { bankSlipService } from "../index";
 
-const digitableLineCorrect = "21290001192110001210904475617405975870000002000";
-const digitableLineDigitValidateError = "21290001132110001210904475617405975870000002000";
-const digitableLineOtherCurrencyCode = "21210001192110001210904475617405975870000002000";
-const digitableLineIncorrect = "2129000119211000121090447561740597587000000200";
-const digitableLineWithLetter = "2129000119211000121090447561740597587000000200w";
-const digitableLineBankCodeError = "99990001192110001210904475617405975870000002000";
-
-test("Test if digitable line does not have 47 digits", async() => {
+test("Test if digitable line does not have 47 digits", async () => {
+  const digitableLineIncorrect = "2129000119211000121090447561740597587000000200";
   const response = await bankSlipService({
     httpMethod: "GET",
     pathParameters: {
@@ -24,6 +18,7 @@ test("Test if digitable line does not have 47 digits", async() => {
 })
 
 test("Test if there are letters in the digitable line", async () => {
+  const digitableLineWithLetter = "2129000119211000121090447561740597587000000200w";
   const response = await bankSlipService({
     httpMethod: "GET",
     pathParameters: {
@@ -40,6 +35,7 @@ test("Test if there are letters in the digitable line", async () => {
 })
 
 test("Test if currency code is not valid", async () => {
+  const digitableLineOtherCurrencyCode = "21210001192110001210904475617405975870000002000";
   const response = await bankSlipService({
     httpMethod: "GET",
     pathParameters: {
@@ -56,6 +52,7 @@ test("Test if currency code is not valid", async () => {
 })
 
 test("Test if bank code is not valid", async () => {
+  const digitableLineBankCodeError = "99990001192110001210904475617405975870000002000";
   const response = await bankSlipService({
     httpMethod: "GET",
     pathParameters: {
@@ -72,6 +69,7 @@ test("Test if bank code is not valid", async () => {
 })
 
 test("Test if digits validate is not correct after calc", async () => {
+  const digitableLineDigitValidateError = "21290001132110001210904475617405975870000002000";
   const response = await bankSlipService({
     httpMethod: "GET",
     pathParameters: {
@@ -88,6 +86,7 @@ test("Test if digits validate is not correct after calc", async () => {
 })
 
 test("Test to return data from digitable line", async () => {
+  const digitableLineCorrect = "21290001192110001210904475617405975870000002000";
   const response = await bankSlipService({
     httpMethod: "GET",
     pathParameters: {
