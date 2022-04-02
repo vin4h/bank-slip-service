@@ -164,7 +164,7 @@ const digitIsValid = (firstDigit: number, secondDigit: number, thirdDigit: numbe
 }
 
 /**
- * @description Validate the title slip
+ * @description Validate the digit in digitable line
  * @param {number} digitableLine - The digitable line recived from request
  * @returns {boolean} - returns true fetch fields to calculate, add the get fields, calculate each section and validate the digits as informed in the request. If not return false
  */
@@ -270,7 +270,7 @@ const getExpirationDate = (value: string): string => {
  * @returns {IResponseStructure} - Return object with status code and object with error message our {barCode, amount, expirationDate}
  */
 export const titleSlipValidate = async (digitableLine: number): Promise<IResponseStructure> => {
-  if (digitableLine.toString().length !== 47) {
+  if (digitableLine.toString().length != 47) {
     return {
       statusCode: 400,
       body: JSON.stringify({
