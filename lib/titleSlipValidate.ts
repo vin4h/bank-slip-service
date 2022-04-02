@@ -1,6 +1,7 @@
-import { IConvertInBarCode, IFieldsToCalculate, ISumFields } from "./interfaces";
+import { bankCodeApi } from "./bankApi";
+import { IConvertInBarCode, IFieldsToCalculate, IResponseStructure, ISumFields } from "./interfaces";
 
-export const barCodeIsNumberValidate = (digitableLine: number): boolean => {
+const barCodeIsNumberValidate = (digitableLine: number): boolean => {
   if (isNaN(digitableLine)) {
     return false;
   } else {
@@ -8,7 +9,7 @@ export const barCodeIsNumberValidate = (digitableLine: number): boolean => {
   }
 }
 
-export const currencyCode = (currency: number): boolean => {
+const currencyCode = (currency: number): boolean => {
   if (currency.toString()[3] === '9') {
     return true;
   } else {
@@ -136,8 +137,7 @@ const digitIsVallid = (firstDigit: number, secondDigit: number, thirdDigit: numb
   }
 }
 
-
-export const validateDigitDigitableLine = (digitableLine: number): boolean => {
+const validateDigitDigitableLine = (digitableLine: number): boolean => {
   const { firstFieldCalculate, secondFieldCalculate, thirdFieldCalculate } = getFieldsToCalculate(digitableLine);
 
   const { sumFirstField, sumSecondField, sumThirdField }: ISumFields = sumFields({ firstFieldCalculate, secondFieldCalculate, thirdFieldCalculate });
@@ -154,7 +154,7 @@ export const validateDigitDigitableLine = (digitableLine: number): boolean => {
 
 }
 
-export const convertDigitableLineInBarCode = (digitableLine: number): IConvertInBarCode => {
+const convertDigitableLineInBarCode = (digitableLine: number): IConvertInBarCode => {
   const firstSection = digitableLine.toString().substring(0, 4);
   const secondSection = digitableLine.toString().substring(4, 9);
   const thirdSection = digitableLine.toString().substring(10, 16);
@@ -178,14 +178,14 @@ export const convertDigitableLineInBarCode = (digitableLine: number): IConvertIn
   }
 }
 
-export const amountInBarCode = (value: string): string => {
+const amountInBarCode = (value: string): string => {
   const lastDigits = value.split('').join('').slice(5, 13);
   const decimal = value.slice(13,15);
   const amount = parseFloat(lastDigits).toFixed(0).toString().concat("." + decimal);
   return amount;
 }
 
-export const getExpirationDate = (value: string): string => {
+const getExpirationDate = (value: string): string => {
   let fixedDate = new Date("07-03-2000");
 
   let factor = parseInt(value.slice(1, 5));
@@ -217,4 +217,64 @@ export const getExpirationDate = (value: string): string => {
   convertedDate = new Date(expirationDate).toLocaleDateString().split("/").reverse().join("-");
 
   return convertedDate;
+}
+
+
+export const titleSlipValidate = async (digitableLine: number): Promise<IResponseStructure> => {
+  let statusCode;
+  let body = {};
+  if (!barCodeIsNumberValidate(digitableLine)) {
+    {
+      statusCode = 400;
+      body = JSON.stringify({
+        message: 'Digitable line must be a number',
+      });
+    }
+  }
+
+  if (!currencyCode(digitableLine)) {
+     return {
+      statusCode: 400,
+      body: JSON.stringify({
+        message: 'Currency code is not BRL',
+      })
+    }
+  }
+
+  const isValidBankCode = await bankCodeApi(digitableLine);
+
+  if (!isValidBankCode) {
+     return {
+      statusCode: 400,
+      body : JSON.stringify({
+        message: 'Bank code is not valid',
+      })
+    }
+  }
+
+  const dv = validateDigitDigitableLine(digitableLine);
+
+  if (!dv) {
+     return {
+      statusCode: 400,
+      body: JSON.stringify({
+        message: 'Validator digits on digital line are not valid',
+      })
+    }
+  }
+
+  const { barCode, partialsBarCode }: IConvertInBarCode = convertDigitableLineInBarCode(digitableLine);
+
+  const amount = amountInBarCode(partialsBarCode.sixthSection);
+
+  const expirationDate = getExpirationDate(partialsBarCode.sixthSection);
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify({
+      barCode,
+      amount,
+      expirationDate,
+    }),
+  }
 }

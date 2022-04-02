@@ -21,3 +21,8 @@ export interface IConvertInBarCode {
     sixthSection: string;
   }
 }
+
+export interface IResponseStructure {
+  statusCode: number;
+  body: string;
+}
