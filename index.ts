@@ -14,7 +14,12 @@ export const bankSlipService = async (event: any) => {
   const digitableLine: digitableLine = event.pathParameters.digitableLine;
 
   if (digitableLine.toString().length === 47) {
-    await titleSlipValidate(digitableLine);
+    const { statusCode, body } = await titleSlipValidate(digitableLine);
+
+    return {
+      statusCode,
+      body,
+    }
   } else if (digitableLine.toString().length === 48) {
 
   } else {

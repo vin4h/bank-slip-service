@@ -1,14 +1,6 @@
 import { bankCodeApi } from "./bankApi";
 import { IConvertInBarCode, IFieldsToCalculate, IResponseStructure, ISumFields } from "./interfaces";
 
-const digitableLinesNumberValidate = (digitableLine: number): boolean => {
-  if (isNaN(digitableLine)) {
-    return false;
-  } else {
-    return true;
-  }
-}
-
 const currencyCode = (currency: number): boolean => {
   if (currency.toString()[3] === '9') {
     return true;
@@ -224,12 +216,12 @@ export const titleSlipValidate = async (digitableLine: number): Promise<IRespons
   let statusCode;
   let body = {};
 
-  if (!digitableLinesNumberValidate(digitableLine)) {
-    {
-      statusCode = 400;
-      body = JSON.stringify({
+  if (isNaN(digitableLine)) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({
         message: 'Digitable line must be a number',
-      });
+      })
     }
   }
 
