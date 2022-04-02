@@ -1,4 +1,4 @@
-import { barCodeIsNumberValidate, currencyCode, validateDV, convertDigitableLineInBarCode } from './lib/validate';
+import { barCodeIsNumberValidate, currencyCode, validateDigitDigitableLine, convertDigitableLineInBarCode } from './lib/titleSlipValidate';
 import { bankCodeApi } from './lib/bankApi';
 
 type digitableLine = number;
@@ -17,7 +17,7 @@ export const bankSlipService = async (event: any) => {
     return {
       statusCode: 400,
       body: JSON.stringify({
-        message: 'BarCode must be a number or contains 47 numbers',
+        message: 'Digitable line must be a number or not contains 47 numbers',
       }),
     }
   }
@@ -41,13 +41,22 @@ export const bankSlipService = async (event: any) => {
       }),
     }
   }
+  const dv = validateDigitDigitableLine(digitableLine);
+
+  if (!dv) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({
+        message: 'Validator digits on digital line are not valid',
+      }),
+    }
+  }
   const barCode = convertDigitableLineInBarCode(digitableLine);
-  const dv = validateDV(barCode);
 
   return {
     statusCode: 200,
     body: JSON.stringify({
-      message: barCode
+      message: dv
     }),
   }
 };
