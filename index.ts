@@ -1,7 +1,7 @@
-import { barCodeIsNumberValidate, currencyCode } from './lib/validate';
+import { barCodeIsNumberValidate, currencyCode, validateDV, convertDigitableLineInBarCode } from './lib/validate';
 import { bankCodeApi } from './lib/bankApi';
 
-type barCode = number;
+type digitableLine = number;
 export const bankSlipService = async (event: any) => {
   if (event.httpMethod != 'GET') {
     return {
@@ -11,17 +11,18 @@ export const bankSlipService = async (event: any) => {
       }),
     }
   }
-  const barCode: barCode = event.pathParameters.barCode;
-  if(!barCodeIsNumberValidate(barCode)) {
+  const digitableLine: digitableLine = event.pathParameters.digitableLine;
+
+  if(!barCodeIsNumberValidate(digitableLine)) {
     return {
       statusCode: 400,
       body: JSON.stringify({
-        message: 'BarCode must be a number or contains 44 numbers',
+        message: 'BarCode must be a number or contains 47 numbers',
       }),
     }
   }
 
-  if(!currencyCode(barCode)) {
+  if(!currencyCode(digitableLine)) {
     return {
       statusCode: 400,
       body: JSON.stringify({
@@ -30,7 +31,7 @@ export const bankSlipService = async (event: any) => {
     }
   }
 
-  const isValidBankCode = await bankCodeApi(barCode);
+  const isValidBankCode = await bankCodeApi(digitableLine);
 
   if (!isValidBankCode) {
     return {
@@ -40,11 +41,13 @@ export const bankSlipService = async (event: any) => {
       }),
     }
   }
+  const barCode = convertDigitableLineInBarCode(digitableLine);
+  const dv = validateDV(barCode);
 
   return {
     statusCode: 200,
     body: JSON.stringify({
-      message: 'BarCode is valid',
+      message: barCode
     }),
   }
 };
