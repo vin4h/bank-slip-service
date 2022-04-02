@@ -1,5 +1,6 @@
-import { barCodeIsNumberValidate, currencyCode, validateDigitDigitableLine, convertDigitableLineInBarCode } from './lib/titleSlipValidate';
+import { barCodeIsNumberValidate, currencyCode, validateDigitDigitableLine, convertDigitableLineInBarCode, amountInBarCode } from './lib/titleSlipValidate';
 import { bankCodeApi } from './lib/bankApi';
+import { IConvertInBarCode } from './lib/interfaces';
 
 type digitableLine = number;
 export const bankSlipService = async (event: any) => {
@@ -13,7 +14,7 @@ export const bankSlipService = async (event: any) => {
   }
   const digitableLine: digitableLine = event.pathParameters.digitableLine;
 
-  if(!barCodeIsNumberValidate(digitableLine)) {
+  if (!barCodeIsNumberValidate(digitableLine)) {
     return {
       statusCode: 400,
       body: JSON.stringify({
@@ -22,7 +23,7 @@ export const bankSlipService = async (event: any) => {
     }
   }
 
-  if(!currencyCode(digitableLine)) {
+  if (!currencyCode(digitableLine)) {
     return {
       statusCode: 400,
       body: JSON.stringify({
@@ -51,12 +52,16 @@ export const bankSlipService = async (event: any) => {
       }),
     }
   }
-  const barCode = convertDigitableLineInBarCode(digitableLine);
+  const { barCode, partialsBarCode }: IConvertInBarCode = convertDigitableLineInBarCode(digitableLine);
+
+  const amount = amountInBarCode(partialsBarCode.sixthSection);
 
   return {
     statusCode: 200,
     body: JSON.stringify({
-      message: dv
+      barCode,
+      amount,
+      "expirationDate": "2021-01-01",
     }),
   }
 };

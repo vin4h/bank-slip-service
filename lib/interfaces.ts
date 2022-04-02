@@ -9,3 +9,15 @@ export interface ISumFields {
   sumSecondField: number;
   sumThirdField: number;
 }
+
+export interface IConvertInBarCode {
+  barCode: string;
+  partialsBarCode: {
+    firstSection: string;
+    secondSection: string;
+    thirdSection: string;
+    fourthSection: string;
+    fifthSection: string;
+    sixthSection: string;
+  }
+}

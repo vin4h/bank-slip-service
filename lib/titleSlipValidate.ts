@@ -1,9 +1,9 @@
-import { IFieldsToCalculate, ISumFields } from "./interfaces";
+import { IConvertInBarCode, IFieldsToCalculate, ISumFields } from "./interfaces";
 
 export const barCodeIsNumberValidate = (digitableLine: number): boolean => {
-  if(digitableLine.toString().length != 47) {
+  if (digitableLine.toString().length != 47) {
     return false;
-  } else if(isNaN(digitableLine)) {
+  } else if (isNaN(digitableLine)) {
     return false;
   } else {
     return true;
@@ -22,27 +22,27 @@ const getFieldsToCalculate = (digitableLine: number): IFieldsToCalculate => {
 
   const firstFieldCalculate =
     digitableLine
-    .toString()
-    .slice(0, 9)
-    .split('')
-    .reverse()
-    .join('')
+      .toString()
+      .slice(0, 9)
+      .split('')
+      .reverse()
+      .join('')
 
   const secondFieldCalculate =
     digitableLine
-    .toString()
-    .slice(10, 20)
-    .split('')
-    .reverse()
-    .join('')
+      .toString()
+      .slice(10, 20)
+      .split('')
+      .reverse()
+      .join('')
 
   const thirdFieldCalculate =
     digitableLine
-    .toString()
-    .slice(21, 31)
-    .split('')
-    .reverse()
-    .join('')
+      .toString()
+      .slice(21, 31)
+      .split('')
+      .reverse()
+      .join('')
 
   return {
     firstFieldCalculate,
@@ -59,7 +59,7 @@ const exceededMultiplierValue = (value: number) => {
   return sum;
 }
 
-const sumFields = ({firstFieldCalculate, secondFieldCalculate, thirdFieldCalculate}: IFieldsToCalculate): ISumFields => {
+const sumFields = ({ firstFieldCalculate, secondFieldCalculate, thirdFieldCalculate }: IFieldsToCalculate): ISumFields => {
   let mult = 2;
 
   const sumFirstField = firstFieldCalculate.split('').reduce((acc, curr) => {
@@ -131,7 +131,7 @@ const digitIsVallid = (firstDigit: number, secondDigit: number, thirdDigit: numb
   const firstNumberDigitValid = parseInt(digitableLine.toString()[9]);
   const secondNumberDigitValid = parseInt(digitableLine.toString()[20]);
   const thirdNumberDigitValid = parseInt(digitableLine.toString()[31]);
-  if(firstNumberDigitValid === firstDigit && secondNumberDigitValid === secondDigit && thirdNumberDigitValid === thirdDigit) {
+  if (firstNumberDigitValid === firstDigit && secondNumberDigitValid === secondDigit && thirdNumberDigitValid === thirdDigit) {
     return true;
   } else {
     return false
@@ -156,7 +156,7 @@ export const validateDigitDigitableLine = (digitableLine: number): boolean => {
 
 }
 
-export const convertDigitableLineInBarCode = (digitableLine: number): string => {
+export const convertDigitableLineInBarCode = (digitableLine: number): IConvertInBarCode => {
   const firstSection = digitableLine.toString().substring(0, 4);
   const secondSection = digitableLine.toString().substring(4, 9);
   const thirdSection = digitableLine.toString().substring(10, 16);
@@ -164,5 +164,25 @@ export const convertDigitableLineInBarCode = (digitableLine: number): string => 
   const fifthSection = digitableLine.toString().substring(21, 31);
   const sixthSection = digitableLine.toString().substring(32, 47);
 
-  return firstSection.concat(sixthSection, secondSection,thirdSection ,fourthSection ,fifthSection)
+  const barCode = firstSection.concat(sixthSection, secondSection, thirdSection, fourthSection, fifthSection);
+  const partialsBarCode = {
+    firstSection,
+    secondSection,
+    thirdSection,
+    fourthSection,
+    fifthSection,
+    sixthSection
+  }
+
+  return {
+    barCode,
+    partialsBarCode
+  }
+}
+
+export const amountInBarCode = (value: string): string => {
+  const lastDigits = value.split('').join('').slice(5, 13);
+  const decimal = value.slice(13,15);
+  const amount = parseFloat(lastDigits).toFixed(0).toString().concat("." + decimal);
+  return amount;
 }
