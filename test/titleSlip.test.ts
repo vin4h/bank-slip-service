@@ -1,7 +1,7 @@
 import { bankSlipService } from "../index";
 
-test("Test if digitable line does not have 47 digits", async () => {
-  const digitableLineIncorrect = "2129000119211000121090447561740597587000000200";
+test("Test if digitable line does not have 47 or 48 digits", async () => {
+  const digitableLineIncorrect = "21290001192110001210904475617405975870000200";
   const response = await bankSlipService({
     httpMethod: "GET",
     pathParameters: {
@@ -12,7 +12,7 @@ test("Test if digitable line does not have 47 digits", async () => {
   expect(response).toEqual({
     statusCode: 400,
     body: JSON.stringify({
-      message: "The digitable line must have 47 characters"
+      message: "Digitable line must have 47 or 48 characters"
     })
   })
 })
@@ -30,40 +30,6 @@ test("Test if there are letters in the digitable line", async () => {
     statusCode: 400,
     body: JSON.stringify({
       message: "Digitable line must be a number"
-    })
-  })
-})
-
-test("Test if currency code is not valid", async () => {
-  const digitableLineOtherCurrencyCode = "21210001192110001210904475617405975870000002000";
-  const response = await bankSlipService({
-    httpMethod: "GET",
-    pathParameters: {
-      digitableLine: digitableLineOtherCurrencyCode,
-    },
-  });
-
-  expect(response).toEqual({
-    statusCode: 400,
-    body: JSON.stringify({
-      message: "Currency code is not BRL"
-    })
-  })
-})
-
-test("Test if bank code is not valid", async () => {
-  const digitableLineBankCodeError = "99990001192110001210904475617405975870000002000";
-  const response = await bankSlipService({
-    httpMethod: "GET",
-    pathParameters: {
-      digitableLine: digitableLineBankCodeError,
-    },
-  });
-
-  expect(response).toEqual({
-    statusCode: 400,
-    body: JSON.stringify({
-      message: "Bank code is not valid"
     })
   })
 })
