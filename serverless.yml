@@ -15,8 +15,8 @@ functions:
     handler: index.bankSlipService
     events:
       - http:
-        path: /boleto/{digitableLine}
-        method: GET
-        parameters:
-             paths:
-               barCode: true
+          path: /boleto/{digitableLine}
+          method: GET
+          parameters:
+              paths:
+                digitableLine: true
