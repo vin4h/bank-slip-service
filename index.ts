@@ -1,6 +1,7 @@
-import { titleSlipValidate } from './lib/titleSlipValidate';
+import { agreementTicketService } from './lib/agreementSlip/agreementSlip';
+import { titleSlipValidate } from './lib/titleSlip/titleSlip';
 
-type digitableLine = number;
+type digitableLine = string;
 export const bankSlipService = async (event: any) => {
   if (event.httpMethod != 'GET') {
     return {
@@ -13,11 +14,28 @@ export const bankSlipService = async (event: any) => {
 
   const digitableLine: digitableLine = event.pathParameters.digitableLine;
 
-  const { statusCode, body } = await titleSlipValidate(digitableLine);
+  if (digitableLine.length === 47) {
 
-  return {
-    statusCode,
-    body,
+    const { statusCode, body } = await titleSlipValidate(digitableLine);
+
+    return {
+      statusCode,
+      body
+    }
+  } else if (digitableLine.toString().length === 48) {
+    const { statusCode, body } = await agreementTicketService(digitableLine);
+
+    return {
+      statusCode,
+      body
+    }
+  } else {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({
+        message: 'Digitable line must have 47 or 48 characters',
+      }),
+    }
   }
 
 };
